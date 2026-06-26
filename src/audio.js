@@ -1,9 +1,11 @@
-// audio.js — voice callouts, the countdown "dong", and per-location background music.
+// audio.js — all game audio through the Web Audio API.
 //
-// VOICE: real recorded clips in assets/voice, played via Wonderbox.sound (which handles the console's
-//   audio sandbox + autoplay). A cached <audio> fallback covers plain-browser testing without the SDK.
-// DONG: synthesized with the Web Audio API (no asset needed), like the Wonderbox boot screen.
-// MUSIC: per-location track via Wonderbox.music (set in src/match.js when a set starts).
+// Why not Wonderbox.music / .sound (HTMLAudioElement)? On the console the game runs in a sandboxed
+// iframe that only ever receives FORWARDED input (postMessage), never a real user gesture, and this
+// Chromium build won't autoplay an <audio> element there — so file playback via HTMLAudio stays
+// silent. The Web Audio context, by contrast, can be resumed and plays decoded buffers reliably
+// (the synth dong/blip already prove this). So we fetch + decodeAudioData every clip and play it as
+// an AudioBufferSourceNode. (The console's game-content CSP allows the game to fetch its OWN files.)
 
 const VOICE_PATH = {
   ready:   'assets/voice/ready.mp3',     // before each game's countdown
@@ -14,35 +16,63 @@ const VOICE_PATH = {
   winner:  'assets/voice/winner.mp3',    // end of the match
   intro:   'assets/voice/intro.mp3',     // title screen, as "FURY!" slides in
 };
-const voiceEls = {};                       // cached <audio> elements for the browser fallback
 
 let actx = null;
-let currentMusic;                          // URL of the track currently set (undefined = none yet)
+const MUSIC_VOL = 0.5, SFX_VOL = 1;
+const buffers = {};                        // url -> Promise<AudioBuffer> (decode cache)
+let musicUrl = null;                       // desired track (null = none)
+let musicSrc = null, musicGain = null;     // the live looping source
+let musicPlayingUrl = null;                // what musicSrc is actually playing
+
 function ctx() {
   if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; } }
   if (actx && actx.state === 'suspended') { try { actx.resume(); } catch (e) {} }
   return actx;
 }
 
+function loadBuffer(url) {
+  if (buffers[url]) return buffers[url];
+  const c = ctx(); if (!c) return Promise.reject(new Error('no audio'));
+  buffers[url] = fetch(url)
+    .then((r) => { if (!r.ok) throw new Error('fetch ' + r.status + ' ' + url); return r.arrayBuffer(); })
+    .then((ab) => c.decodeAudioData(ab))
+    .catch((e) => { delete buffers[url]; throw e; });   // drop on failure so a later call can retry
+  return buffers[url];
+}
+
+function stopMusic() {
+  if (musicSrc) { try { musicSrc.stop(); } catch (e) {} try { musicSrc.disconnect(); } catch (e) {} }
+  musicSrc = null; musicPlayingUrl = null;
+}
+
+function startMusic() {
+  const c = ctx(); if (!c || !musicUrl) return;
+  if (musicSrc && musicPlayingUrl === musicUrl) return;            // already playing the right track
+  loadBuffer(musicUrl).then((buf) => {
+    if (musicUrl == null) return;                                   // stopped while loading
+    if (musicSrc && musicPlayingUrl === musicUrl) return;           // won a race
+    stopMusic();
+    musicGain = c.createGain(); musicGain.gain.value = MUSIC_VOL;
+    musicSrc = c.createBufferSource(); musicSrc.buffer = buf; musicSrc.loop = true;
+    musicSrc.connect(musicGain).connect(c.destination);
+    musicSrc.start();
+    musicPlayingUrl = musicUrl;
+  }).catch(() => {});
+}
+
 export const Audio = {
-  // Has audio been unlocked (a user gesture happened, so sound can actually play)? Browsers start the
-  // AudioContext suspended until then; on the console there's no such restriction.
+  // Is the context actually running (audio audible)? Suspended until a gesture in a plain browser;
+  // on the console autoplay lets it run.
   ready() { return !!(actx && actx.state === 'running'); },
 
-  // Unlock/resume audio after a user gesture, and (re)start any music that autoplay had blocked.
-  unlock() {
-    const c = ctx();                       // creates + resumes the context
-    const m = window.Wonderbox && window.Wonderbox.music;
-    if (m && currentMusic) { try { m.set(currentMusic, { volume: 0.5, loop: true, autoplay: true }); } catch (e) {} }
-    return !!c;
-  },
+  // Resume after a user gesture and (re)start any music autoplay had deferred.
+  unlock() { const c = ctx(); startMusic(); return !!c; },
 
-  // A deep gong/"dong" for each countdown beat. freq lower = heavier.
+  // Deep gong/"dong" for each countdown beat.
   dong(freq = 180) {
     const c = ctx(); if (!c) return;
     const t = c.currentTime;
-    const o = c.createOscillator();
-    const g = c.createGain();
+    const o = c.createOscillator(); const g = c.createGain();
     o.type = 'sine';
     o.frequency.setValueAtTime(freq, t);
     o.frequency.exponentialRampToValueAtTime(freq * 0.6, t + 0.5);
@@ -53,7 +83,7 @@ export const Audio = {
     o.start(t); o.stop(t + 1.0);
   },
 
-  // A short high "tick" (used for lighting each step of a memory sequence).
+  // Short high "tick" (used for lighting each step of a memory sequence).
   blip(freq = 440) {
     const c = ctx(); if (!c) return;
     const t = c.currentTime;
@@ -66,13 +96,10 @@ export const Audio = {
     o.start(t); o.stop(t + 0.2);
   },
 
-  // A synthesized explosion: a filtered noise burst plus a low "boom" thump, both fast-decaying.
-  // opts: { volume, duration, cutoff } — bigger/louder for a heavier blast.
+  // Synthesized explosion: a filtered noise burst plus a low "boom", both fast-decaying.
   explosion({ volume = 0.5, duration = 0.35, cutoff = 1300 } = {}) {
     const c = ctx(); if (!c) return;
     const t = c.currentTime;
-
-    // Noise burst (the "crack"), low-passed and swept down so it darkens as it decays.
     const frames = Math.max(1, Math.floor(c.sampleRate * duration));
     const buf = c.createBuffer(1, frames, c.sampleRate);
     const data = buf.getChannelData(0);
@@ -87,8 +114,6 @@ export const Audio = {
     ng.gain.exponentialRampToValueAtTime(0.0001, t + duration);
     noise.connect(lp).connect(ng).connect(c.destination);
     noise.start(t); noise.stop(t + duration);
-
-    // Low sine "boom" (the body), pitched down for weight.
     const o = c.createOscillator(); const og = c.createGain();
     o.type = 'sine';
     o.frequency.setValueAtTime(130, t);
@@ -100,28 +125,24 @@ export const Audio = {
     o.start(t); o.stop(t + duration + 0.05);
   },
 
-  // Voice callout by key: 'ready' | 'go' | 'tie' | 'player1' | 'player2' | 'winner' | 'intro'.
+  // Voice callout (recorded clip): 'ready' | 'go' | 'tie' | 'player1' | 'player2' | 'winner' | 'intro'.
   voice(line) {
     const url = VOICE_PATH[line]; if (!url) return;
-    const s = window.Wonderbox && window.Wonderbox.sound;
-    if (s && s.play) { try { s.play(url, { volume: 1 }); return; } catch (e) {} }
-    // Browser fallback (no SDK sound API): play via a cached <audio> element.
-    try {
-      let el = voiceEls[line];
-      if (!el) { el = voiceEls[line] = new Audio(url); }
-      el.currentTime = 0; el.volume = 1; el.play().catch(() => {});
-    } catch (e) {}
+    const c = ctx(); if (!c) return;
+    loadBuffer(url).then((buf) => {
+      const g = c.createGain(); g.gain.value = SFX_VOL;
+      const s = c.createBufferSource(); s.buffer = buf;
+      s.connect(g).connect(c.destination); s.start();
+    }).catch(() => {});
   },
 
-  // Background music (looping). Pass a URL, or null to stop. Calling with the track that's already
-  // playing is a no-op, so menu music flows seamlessly across screens without re-triggering.
+  // Looping background music. Pass a URL, or null to stop. Re-calling with the current track is a
+  // no-op, so menu/location music flows seamlessly without re-triggering.
   music(url) {
-    const m = window.Wonderbox && window.Wonderbox.music; if (!m) return;
-    if (url === currentMusic) return;
-    currentMusic = url;
-    try {
-      if (!url) { m.stop(); return; }
-      m.set(url, { volume: 0.5, loop: true, autoplay: true });
-    } catch (e) {}
+    url = url || null;
+    if (url === musicUrl) return;
+    musicUrl = url;
+    if (!url) { stopMusic(); return; }
+    startMusic();
   },
 };
