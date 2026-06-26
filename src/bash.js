@@ -8,7 +8,7 @@
 // playBash() -> Promise<1 | 2 | 0>   (winner, or 0 for a tie)
 import { Input } from './input.js';
 import { Audio } from './audio.js';
-import { setApp, el, banner, countdown, padHtml } from './ui.js';
+import { setApp, el, banner, ready321, fight, padHtml } from './ui.js';
 import { USABLE, SYMBOL, BASH_SECONDS, P1, P2, DRAW } from './config.js';
 
 function pickTwoButtons() {
@@ -46,7 +46,7 @@ export async function playBash() {
 
   const padKey = (player, k) => arena.querySelector(`.player-col.p${player} .key[data-k="${k}"]`);
 
-  await countdown();   // READY · 3 · 2 · 1 · GO!
+  await ready321();   // READY · 3 · 2 · 1 (GO! flashes below, as input goes live)
 
   const winner = await new Promise((resolve) => {
     const count = { 1: 0, 2: 0 };
@@ -90,6 +90,7 @@ export async function playBash() {
     }
     offs.push(Input.onPress(P1, (b) => handle(P1, b)));
     offs.push(Input.onPress(P2, (b) => handle(P2, b)));
+    fight();                                          // flash GO! + voice; input + clock are already live
 
     // Only the clock ends it. Level (including nobody pressing) → DRAW, so the set is simply tied.
     const start = performance.now();

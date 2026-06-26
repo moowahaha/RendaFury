@@ -49,11 +49,9 @@ export async function playSimon(difficulty) {
     await wait(difficulty.gapMs);
   }
 
-  // --- then count the players in and start ---
+  // --- count the players in, then race (input goes live the instant GO! flashes, not after it) ---
   await count321();
-  await fight();
 
-  // --- input race ---
   const winner = await new Promise((resolve) => {
     const progress = { 1: 0, 2: 0 };
     let done = false;
@@ -78,6 +76,7 @@ export async function playSimon(difficulty) {
     offs.push(Input.onPress(P1, (b) => handle(P1, b)));
     offs.push(Input.onPress(P2, (b) => handle(P2, b)));
     const timer = setTimeout(() => finish(DRAW), SIMON_TIMEOUT_MS);
+    fight();                                          // flash GO! + voice while input is already accepted
   });
 
   await showResult(winner);
