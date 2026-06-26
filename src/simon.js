@@ -5,7 +5,7 @@
 // playSimon(difficulty) -> Promise<1 | 2 | 0>   (winner, or 0 for a draw)
 import { Input } from './input.js';
 import { Audio } from './audio.js';
-import { setApp, el, banner, ready321, fight, wait, padHtml } from './ui.js';
+import { setApp, el, banner, ready, count321, fight, wait, padHtml } from './ui.js';
 import { USABLE, SIMON_TIMEOUT_MS, P1, P2, DRAW } from './config.js';
 
 function randomSeq(len) {
@@ -36,7 +36,7 @@ export async function playSimon(difficulty) {
   const padKey = (player, k) => arena.querySelector(`.player-col.p${player} .key[data-k="${k}"]`);
   const prog = { 1: arena.querySelector('#prog1'), 2: arena.querySelector('#prog2') };
 
-  await ready321();
+  await ready();
 
   // --- show the sequence on BOTH pads (memorise) ---
   const seq = randomSeq(difficulty.seqLen);
@@ -49,6 +49,8 @@ export async function playSimon(difficulty) {
     await wait(difficulty.gapMs);
   }
 
+  // --- then count the players in and start ---
+  await count321();
   await fight();
 
   // --- input race ---

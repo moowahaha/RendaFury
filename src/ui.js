@@ -86,21 +86,25 @@ export function banner(text, opts = {}) {
 }
 export function clearBanner() { document.getElementById('banner').classList.add('hidden'); }
 
-// ---- countdown pieces: READY · 3 · 2 · 1 (each a dong) … then FIGHT! -----
-// Split so the memory game can slot its "watch the sequence" phase between the count and FIGHT.
-export async function ready321() {
+// ---- countdown pieces: READY · 三 二 一 (each a dong) … then GO! -----
+// Split into parts so the memory game can show its sequence mid-countdown:
+//   READY → watch the sequence → 三 二 一 → GO!   (the bash uses the whole thing back-to-back).
+export async function ready() {
   Audio.voice('ready');
   await banner('READY', { cls: 'gold', ms: 650 });
+}
+export async function count321() {
   for (const k of ['三', '二', '一']) {        // 3 · 2 · 1 in kanji, for flavour
     Audio.dong();
     await banner(k, { ms: 650 });
   }
 }
+export async function ready321() { await ready(); await count321(); }
 export async function fight() {
   Audio.voice('go');
   await banner('GO!', { cls: 'red', ms: 600 });
 }
-// Full countdown (READY · 3 · 2 · 1 · FIGHT!) — used by the bash tiebreak.
+// Full countdown (READY · 三 二 一 · GO!) — used by the bash tiebreak.
 export async function countdown() { await ready321(); await fight(); }
 
 // ---- instruction strip ----------------------------------------------------
