@@ -24,17 +24,14 @@ export function title() {
       <div class="player-only">2 PLAYER ONLY!</div>`;
     setApp(screen);
 
-    // Explosion stingers as each half of the logo lands: a small one for "Renda", a louder/longer one
-    // for "FURY!". These fire every time the slide-in plays (so they re-fire on replay below).
+    // Explosion stingers as each half of the logo lands. They fire once, with the on-load slide-in —
+    // but ONLY if audio is already live (console, or a return visit to the title). On a browser's very
+    // first load audio is still locked, so we deliberately schedule nothing: queuing a buffer on a
+    // suspended context makes it play late (and doubled) the moment the user's first press resumes it.
     const renda = screen.querySelector('.renda');
     const fury = screen.querySelector('.fury');
-    renda.addEventListener('animationend', () => Audio.explosion({ volume: 0.35, duration: 0.25, cutoff: 1000 }));
-    fury.addEventListener('animationend', () => { Audio.explosion({ volume: 0.6, duration: 0.5, cutoff: 1700 }); Audio.voice('intro'); });
-
-    // Restart both slide-in animations from the top (used to replay the reveal once audio is unlocked).
-    function replayReveal() {
-      [renda, fury].forEach((w) => { w.style.animation = 'none'; void w.offsetWidth; w.style.animation = ''; });
-    }
+    renda.addEventListener('animationend', () => { if (Audio.ready()) Audio.explosion({ volume: 0.35, duration: 0.25, cutoff: 1000 }); });
+    fury.addEventListener('animationend', () => { if (Audio.ready()) { Audio.explosion({ volume: 0.6, duration: 0.5, cutoff: 1700 }); Audio.voice('intro'); } });
 
     const optDiff = screen.querySelector('#opt-diff');
     const optSets = screen.querySelector('#opt-sets');
@@ -48,13 +45,12 @@ export function title() {
     }
     paint();
 
-    // The FIRST press wakes audio (a gesture is needed to start the AudioContext) and replays the
-    // logo reveal so its booms + menu music are heard — but ONCE. Every later press navigates,
-    // regardless of whether audio has finished waking. (Gating on Audio.ready() was the bug: the
-    // context resumes asynchronously, so ready() stayed false and every press just replayed the intro.)
+    // The first press wakes browser audio (a gesture is needed to start the AudioContext) — but does
+    // NOT replay the logo reveal; that plays once on load and shouldn't re-trigger. The same press
+    // still navigates, so no input is dropped.
     let woken = false;
     const off = Input.onAnyPress((player, btn) => {
-      if (!woken) { woken = true; Audio.unlock(); replayReveal(); return; }
+      if (!woken) { woken = true; Audio.unlock(); }
       if (btn === 'up' || btn === 'down') { row = row ? 0 : 1; Audio.blip(520); paint(); }
       else if (btn === 'left' || btn === 'right') {
         const d = btn === 'left' ? -1 : 1;
