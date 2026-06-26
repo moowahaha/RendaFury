@@ -52,7 +52,7 @@ just uses their own controller.
     (next correct alternation wins), so it's always decisive.
   - Otherwise the set goes to whoever won more of the two memory games.
 - **Difficulty** (`config.js → DIFFICULTIES`) sets the memory sequence **length** and **speed**:
-  - **White Belt** — 3 buttons, slow. **Black Belt** — 5, medium. **Furious** — 7, fast.
+  - **White Belt** — 4 buttons, slow. **Black Belt** — 6, medium. **Furious** — 8, fast.
 - **Every game** runs a **READY · 3 · 2 · 1** countdown (each beat a synth "dong") then **FIGHT!**,
   and ends with a **WINNER!** or **DRAW!** callout. (Memory shows its sequence between the count and
   FIGHT; bash goes straight to FIGHT.)
