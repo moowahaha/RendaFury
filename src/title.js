@@ -48,11 +48,13 @@ export function title() {
     }
     paint();
 
+    // The FIRST press wakes audio (a gesture is needed to start the AudioContext) and replays the
+    // logo reveal so its booms + menu music are heard — but ONCE. Every later press navigates,
+    // regardless of whether audio has finished waking. (Gating on Audio.ready() was the bug: the
+    // context resumes asynchronously, so ready() stayed false and every press just replayed the intro.)
+    let woken = false;
     const off = Input.onAnyPress((player, btn) => {
-      // First interaction unlocks browser audio; replay the logo reveal so its booms + the menu music
-      // are actually heard (on the console audio is already live, so this branch is skipped). The
-      // waking press is consumed — it just kicks off the show.
-      if (!Audio.ready()) { Audio.unlock(); replayReveal(); return; }
+      if (!woken) { woken = true; Audio.unlock(); replayReveal(); return; }
       if (btn === 'up' || btn === 'down') { row = row ? 0 : 1; Audio.blip(520); paint(); }
       else if (btn === 'left' || btn === 'right') {
         const d = btn === 'left' ? -1 : 1;
