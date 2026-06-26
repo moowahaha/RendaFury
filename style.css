@@ -209,8 +209,10 @@ html, body {
 }
 
 /* ---- results screen ---- */
-.result-winner { font-size: 9vh; font-weight: 900; }
-.result-winner.p1 { color: var(--p1); text-shadow: 0 0 3vh var(--p1-glow); }
-.result-winner.p2 { color: var(--p2); text-shadow: 0 0 3vh var(--p2-glow); }
+/* solid dark outline so the player colour stays legible on any backdrop (e.g. blue on a blue sky) */
+.result-winner { font-size: 9vh; font-weight: 900;
+  text-shadow: .25vh .25vh 0 #000, -.25vh .25vh 0 #000, .25vh -.25vh 0 #000, -.25vh -.25vh 0 #000, 0 0 1.6vh #000; }
+.result-winner.p1 { color: var(--p1); }
+.result-winner.p2 { color: #6f9dff; }   /* a brighter blue than the base --p2, to lift it off blue art */
 .result-score { font-size: 6vh; letter-spacing: .2em; margin: 2vh 0; }
 .result-meta { font-size: 2.4vh; opacity: .8; }
