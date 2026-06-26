@@ -1,0 +1,138 @@
+/* Renda Fury — Japanese / Street-Fighter-flavoured theme. Deep reds, black, gold, brush energy.
+   Everything scales off vw/vh so it fills a 16:9 TV. Art (backgrounds, cover, fonts) is added later. */
+
+:root {
+  --red: #e60012;          /* Japan red */
+  --red-dk: #7a0010;
+  --gold: #f5c518;
+  --ink: #0a0a0c;
+  --paper: #f4efe6;
+  --p1: #ff3b30;           /* Player 1 = red */
+  --p2: #2f6bff;           /* Player 2 = blue */
+  --p1-glow: rgba(255, 59, 48, .8);
+  --p2-glow: rgba(47, 107, 255, .8);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--ink); color: var(--paper);
+  font-family: "Trebuchet MS", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  user-select: none; -webkit-user-select: none;
+}
+
+.hidden { display: none !important; }
+
+/* ---- stage background (per-location image, dark wash on top) ---- */
+#stage {
+  position: fixed; inset: 0; z-index: 0;
+  background-color: #14060a;
+  background-size: cover; background-position: center;
+  /* faux "rising sun" rays as the default backdrop until a location image is supplied */
+  background-image:
+    radial-gradient(circle at 50% 120%, rgba(230,0,18,.35), transparent 60%),
+    repeating-conic-gradient(from 0deg at 50% 120%, rgba(230,0,18,.12) 0deg 6deg, transparent 6deg 12deg);
+}
+#stage::after {                          /* darkening wash so foreground UI stays readable */
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.25) 40%, rgba(0,0,0,.7));
+}
+
+/* ---- HUD (top score bar) ---- */
+#hud {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.4vh 2.5vw; gap: 2vw;
+  background: linear-gradient(180deg, rgba(0,0,0,.85), rgba(0,0,0,.35));
+  border-bottom: .3vh solid var(--gold);
+}
+.hud-side { display: flex; flex-direction: column; gap: .4vh; min-width: 22vw; }
+.hud-side.p2 { align-items: flex-end; text-align: right; }
+.hud-name { font-size: 2.6vh; font-weight: bold; letter-spacing: .12em; }
+.hud-side.p1 .hud-name { color: var(--p1); text-shadow: 0 0 1vh var(--p1-glow); }
+.hud-side.p2 .hud-name { color: var(--p2); text-shadow: 0 0 1vh var(--p2-glow); }
+.hud-sets { display: flex; gap: .6vw; font-size: 2.4vh; }
+.pip { width: 2.2vh; height: 2.2vh; border-radius: 50%; border: .3vh solid var(--gold); opacity: .35; }
+.pip.win { opacity: 1; background: var(--gold); box-shadow: 0 0 1.2vh var(--gold); }
+.hud-center { text-align: center; flex: 1; }
+.hud-title { font-size: 2.2vh; letter-spacing: .35em; color: var(--gold); }
+.hud-sub { font-size: 2vh; opacity: .85; margin-top: .3vh; }
+.hud-games { font-size: 1.9vh; opacity: .8; margin-top: .3vh; letter-spacing: .1em; }
+
+/* ---- the active screen ---- */
+#app { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; padding-top: 9vh; }
+
+/* generic centered column layout for screens */
+.screen { display: flex; flex-direction: column; align-items: center; gap: 3vh; text-align: center; width: 100%; }
+
+/* ---- title screen ---- */
+.logo { line-height: .9; }
+.logo .kanji { font-size: 13vh; color: var(--red); text-shadow: 0 0 2vh var(--red-dk), .4vh .4vh 0 #000; letter-spacing: .1em; }
+.logo .latin { font-size: 8vh; font-weight: 900; letter-spacing: .06em; color: var(--paper); text-shadow: .5vh .5vh 0 var(--red-dk); }
+.menu { display: flex; flex-direction: column; gap: 1.6vh; margin-top: 2vh; }
+.menu-row { display: flex; align-items: center; gap: 2vw; font-size: 3vh; }
+.menu-row .label { width: 18vw; text-align: right; color: var(--gold); letter-spacing: .1em; }
+.menu-row .opts { display: flex; gap: 1.2vw; }
+.opt { padding: .8vh 2vw; border: .3vh solid rgba(245,197,24,.4); border-radius: 1vh; opacity: .6; }
+.opt.sel { opacity: 1; border-color: var(--gold); background: rgba(245,197,24,.15); box-shadow: 0 0 1.5vh rgba(245,197,24,.4); }
+.menu-row.active .label { text-shadow: 0 0 1vh var(--gold); }
+.menu-row.active .opt.sel { color: var(--gold); }
+.hint { font-size: 2vh; opacity: .7; margin-top: 2vh; letter-spacing: .08em; }
+.controls-note { font-size: 1.7vh; opacity: .55; margin-top: 1vh; max-width: 70vw; line-height: 1.5; }
+
+/* ---- player button pads (Simon / bash) ---- */
+.arena { display: flex; justify-content: space-around; align-items: center; width: 100%; gap: 4vw; }
+.player-col { display: flex; flex-direction: column; align-items: center; gap: 2vh; flex: 1; }
+.player-col .ptag { font-size: 3vh; font-weight: bold; letter-spacing: .15em; }
+.player-col.p1 .ptag { color: var(--p1); text-shadow: 0 0 1.2vh var(--p1-glow); }
+.player-col.p2 .ptag { color: var(--p2); text-shadow: 0 0 1.2vh var(--p2-glow); }
+.player-col .progress { font-size: 2.4vh; letter-spacing: .3em; min-height: 3vh; opacity: .9; }
+.player-col .meter { width: 60%; height: 2.4vh; border: .3vh solid var(--gold); border-radius: 1.2vh; overflow: hidden; background: rgba(0,0,0,.5); }
+.player-col .meter > i { display: block; height: 100%; width: 0%; transition: width .06s linear; }
+.player-col.p1 .meter > i { background: var(--p1); }
+.player-col.p2 .meter > i { background: var(--p2); }
+.player-col .count { font-size: 4vh; font-weight: 900; }
+
+/* the on-screen button grid that lights up during a Simon sequence */
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1vh; width: 26vh; }
+.pad .key {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 4vh; border-radius: 1.2vh; border: .35vh solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.05); color: rgba(255,255,255,.5); transition: all .08s ease;
+}
+.pad .key.lit { transform: scale(1.08); color: #fff; }
+.player-col.p1 .pad .key.lit { background: var(--p1); border-color: #fff; box-shadow: 0 0 2.5vh var(--p1-glow); }
+.player-col.p2 .pad .key.lit { background: var(--p2); border-color: #fff; box-shadow: 0 0 2.5vh var(--p2-glow); }
+.pad .key.miss { background: #555; box-shadow: 0 0 1.5vh #000; }
+/* keys at grid positions matching a d-pad + face buttons */
+.key[data-k="up"]    { grid-area: 1 / 2; }
+.key[data-k="left"]  { grid-area: 2 / 1; }
+.key[data-k="b"]     { grid-area: 2 / 2; }
+.key[data-k="right"] { grid-area: 2 / 3; }
+.key[data-k="down"]  { grid-area: 3 / 2; }
+.key[data-k="a"]     { grid-area: 3 / 3; }
+
+/* ---- big centered banner (READY / FIGHT! / WINNER! …) ---- */
+#banner {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center; pointer-events: none;
+}
+#banner .txt {
+  font-size: 16vh; font-weight: 900; letter-spacing: .04em; text-align: center;
+  color: var(--paper); text-shadow: 0 0 4vh #000, .6vh .6vh 0 var(--red-dk);
+  animation: slam .35s cubic-bezier(.2,1.4,.4,1) both;
+}
+#banner .txt.red  { color: var(--red); }
+#banner .txt.gold { color: var(--gold); }
+#banner .txt.p1   { color: var(--p1); text-shadow: 0 0 4vh var(--p1-glow), .6vh .6vh 0 #000; }
+#banner .txt.p2   { color: var(--p2); text-shadow: 0 0 4vh var(--p2-glow), .6vh .6vh 0 #000; }
+.banner-sub { display: block; font-size: 5vh; margin-top: 1vh; color: var(--paper); letter-spacing: .2em; }
+@keyframes slam { from { transform: scale(3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ---- results screen ---- */
+.result-winner { font-size: 9vh; font-weight: 900; }
+.result-winner.p1 { color: var(--p1); text-shadow: 0 0 3vh var(--p1-glow); }
+.result-winner.p2 { color: var(--p2); text-shadow: 0 0 3vh var(--p2-glow); }
+.result-score { font-size: 6vh; letter-spacing: .2em; margin: 2vh 0; }
+.result-meta { font-size: 2.4vh; opacity: .8; }

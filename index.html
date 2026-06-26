@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Renda Fury</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Required Wonderbox SDK (the console rewrites this to a local copy; in a browser it loads from
+       Doc Matrix and runs standalone — keyboard + gamepads — so the game is testable in a browser). -->
+  <script src="https://doc-matrix.com/wonderbox.min.js"></script>
+</head>
+<body>
+  <!-- Per-set stage background (a location image is set here at runtime; dark by default). -->
+  <div id="stage"></div>
+
+  <!-- Top score/status bar (HUD). -->
+  <header id="hud" class="hidden"></header>
+
+  <!-- The active screen renders here (title, a game, results…). -->
+  <main id="app"></main>
+
+  <!-- Full-screen banner overlay for READY / FIGHT! / WINNER! / DRAW! etc. -->
+  <div id="banner" class="hidden"></div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
