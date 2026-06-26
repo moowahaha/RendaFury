@@ -125,6 +125,38 @@ export const Audio = {
     o.start(t); o.stop(t + duration + 0.05);
   },
 
+  // Thunder: a sharp crack that darkens into a long low rumble (paired with the tiebreak lightning).
+  thunder() {
+    const c = ctx(); if (!c) return;
+    const t = c.currentTime;
+    const dur = 1.8;
+    const frames = Math.max(1, Math.floor(c.sampleRate * dur));
+    const buf = c.createBuffer(1, frames, c.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < frames; i++) data[i] = Math.random() * 2 - 1;
+    const noise = c.createBufferSource(); noise.buffer = buf;
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(1100, t);                                   // bright crack…
+    lp.frequency.exponentialRampToValueAtTime(110, t + dur);               // …darkening to a rumble
+    const ng = c.createGain();
+    ng.gain.setValueAtTime(0.0001, t);
+    ng.gain.exponentialRampToValueAtTime(0.8, t + 0.03);                    // crack
+    ng.gain.exponentialRampToValueAtTime(0.3, t + 0.3);                     // settle into rumble
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + dur);                  // long tail
+    noise.connect(lp).connect(ng).connect(c.destination);
+    noise.start(t); noise.stop(t + dur);
+    // sub-bass rumble under it
+    const o = c.createOscillator(); const og = c.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(72, t);
+    o.frequency.exponentialRampToValueAtTime(34, t + dur);
+    og.gain.setValueAtTime(0.0001, t);
+    og.gain.exponentialRampToValueAtTime(0.5, t + 0.05);
+    og.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(og).connect(c.destination);
+    o.start(t); o.stop(t + dur + 0.1);
+  },
+
   // Voice callout (recorded clip): 'ready' | 'go' | 'tie' | 'player1' | 'player2' | 'winner' | 'intro'.
   voice(line) {
     const url = VOICE_PATH[line]; if (!url) return;

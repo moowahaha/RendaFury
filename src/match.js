@@ -7,7 +7,7 @@ import { playSimon } from './simon.js';
 import { playBash } from './bash.js';
 import { pickLocations } from './locations.js';
 import { Audio } from './audio.js';
-import { HUD, banner, setStage, wait, instruction } from './ui.js';
+import { HUD, banner, setStage, wait, instruction, lightning } from './ui.js';
 import { GAMES_PER_SET, P1, P2, DRAW } from './config.js';
 
 export async function playMatch({ difficulty, totalSets }) {
@@ -48,6 +48,7 @@ export async function playMatch({ difficulty, totalSets }) {
       setWinner = gw[1] > gw[2] ? P1 : P2;
     } else {
       hud(loc, `GAME ${GAMES_PER_SET}/${GAMES_PER_SET} · BUTTON BASH     ${tally()}`);
+      Audio.thunder(); lightning();                 // storm flourish as the tiebreak is announced
       await banner('TIEBREAK', { cls: 'red', sub: 'button bash', ms: 1400 });
       if (firstBashIntro) { firstBashIntro = false; instruction('MOST BUTTON PRESSES WINS!', '連打'); }
       setWinner = await playBash();

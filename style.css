@@ -159,6 +159,35 @@ html, body {
 .key[data-k="a"]     { grid-area: 1 / 4; }
 .key[data-k="b"]     { grid-area: 2 / 4; }
 
+/* ---- storm: lightning flash + screen shake (tiebreak intro) ---- */
+.flash {
+  position: fixed; inset: 0; z-index: 100; pointer-events: none;
+  background: #eaf2ff; opacity: 0; mix-blend-mode: screen;
+  animation: lightningFlash 1.25s ease-out forwards;
+}
+@keyframes lightningFlash {     /* a couple of irregular strikes, then gone */
+  0% { opacity: 0; }
+  3% { opacity: .95; }
+  8% { opacity: .08; }
+  13% { opacity: .85; }
+  20% { opacity: .04; }
+  27% { opacity: .5; }
+  35% { opacity: 0; }
+  100% { opacity: 0; }
+}
+/* transform on <body> drags the fixed-position layers, so the whole screen shakes; the slight
+   scale keeps the edges covered as it moves. */
+body.shake { animation: shake .72s ease-in-out both; }
+@keyframes shake {
+  0%   { transform: scale(1.045) translate(0, 0) rotate(0); }
+  15%  { transform: scale(1.045) translate(-1.1vh, .7vh) rotate(-.4deg); }
+  30%  { transform: scale(1.045) translate(1vh, -.7vh) rotate(.4deg); }
+  45%  { transform: scale(1.045) translate(-.8vh, .5vh) rotate(-.3deg); }
+  60%  { transform: scale(1.045) translate(.6vh, -.5vh) rotate(.2deg); }
+  75%  { transform: scale(1.045) translate(-.4vh, .3vh) rotate(-.1deg); }
+  100% { transform: scale(1) translate(0, 0) rotate(0); }
+}
+
 /* ---- big centered banner (READY / FIGHT! / WINNER! …) ---- */
 #banner {
   position: fixed; inset: 0; z-index: 50;

@@ -86,6 +86,15 @@ export function banner(text, opts = {}) {
 }
 export function clearBanner() { document.getElementById('banner').classList.add('hidden'); }
 
+// A short storm flourish: a couple of lightning flashes + a screen shake. Pair with Audio.thunder().
+export function lightning() {
+  const flash = el('div', 'flash');
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 1300);                 // remove after the flash animation
+  document.body.classList.add('shake');
+  setTimeout(() => document.body.classList.remove('shake'), 720);
+}
+
 // ---- countdown pieces: READY · 三 二 一 (each a dong) … then GO! -----
 // Split into parts so the memory game can show its sequence mid-countdown:
 //   READY → watch the sequence → 三 二 一 → GO!   (the bash uses the whole thing back-to-back).
