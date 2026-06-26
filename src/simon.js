@@ -5,17 +5,13 @@
 // playSimon(difficulty) -> Promise<1 | 2 | 0>   (winner, or 0 for a draw)
 import { Input } from './input.js';
 import { Audio } from './audio.js';
-import { setApp, el, banner, ready321, fight, wait } from './ui.js';
-import { USABLE, SYMBOL, SIMON_TIMEOUT_MS, P1, P2, DRAW } from './config.js';
+import { setApp, el, banner, ready321, fight, wait, padHtml } from './ui.js';
+import { USABLE, SIMON_TIMEOUT_MS, P1, P2, DRAW } from './config.js';
 
 function randomSeq(len) {
   const s = [];
   for (let i = 0; i < len; i++) s.push(USABLE[Math.floor(Math.random() * USABLE.length)]);
   return s;
-}
-
-function padHtml() {
-  return `<div class="pad">${USABLE.map((k) => `<div class="key" data-k="${k}">${SYMBOL[k]}</div>`).join('')}</div>`;
 }
 
 function buildArena() {
@@ -87,6 +83,6 @@ export async function playSimon(difficulty) {
 }
 
 async function showResult(winner) {
-  if (winner === DRAW) { Audio.voice('draw'); await banner('DRAW!', { cls: 'gold', sub: 'no clean run', ms: 1600 }); }
-  else { Audio.voice('winner'); await banner('WINNER!', { cls: winner === P1 ? 'p1' : 'p2', sub: 'PLAYER ' + winner, ms: 1600 }); }
+  if (winner === DRAW) { Audio.voice('tie'); await banner('TIE!', { cls: 'gold', sub: 'no clean run', ms: 1600 }); }
+  else { Audio.voice('player' + winner); await banner('WINNER!', { cls: winner === P1 ? 'p1' : 'p2', sub: 'PLAYER ' + winner, ms: 1600 }); }
 }

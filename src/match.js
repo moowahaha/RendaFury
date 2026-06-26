@@ -7,7 +7,7 @@ import { playSimon } from './simon.js';
 import { playBash } from './bash.js';
 import { pickLocations } from './locations.js';
 import { Audio } from './audio.js';
-import { HUD, banner, setStage, wait } from './ui.js';
+import { HUD, banner, setStage, wait, instruction } from './ui.js';
 import { GAMES_PER_SET, P1, P2, DRAW } from './config.js';
 
 export async function playMatch({ difficulty, totalSets }) {
@@ -15,6 +15,7 @@ export async function playMatch({ difficulty, totalSets }) {
   const locations = pickLocations(totalSets);
   const score = { 1: 0, 2: 0 };
   let setIndex = 0;
+  let firstMemoryIntro = true, firstBashIntro = true;   // show each how-to-play hint once per match
 
   const hud = (loc, gamesLine) => HUD.render({
     setsToWin, p1Sets: score[1], p2Sets: score[2],
@@ -36,6 +37,7 @@ export async function playMatch({ difficulty, totalSets }) {
 
     for (let g = 1; g <= 2; g++) {
       hud(loc, `GAME ${g}/${GAMES_PER_SET} · MEMORY     ${tally()}`);
+      if (firstMemoryIntro) { firstMemoryIntro = false; instruction('FIRST TO MATCH THE PATTERN WINS!', '記憶'); }
       const w = await playSimon(difficulty);
       if (w !== DRAW) gw[w]++;
       await wait(600);
@@ -47,13 +49,19 @@ export async function playMatch({ difficulty, totalSets }) {
     } else {
       hud(loc, `GAME ${GAMES_PER_SET}/${GAMES_PER_SET} · BUTTON BASH     ${tally()}`);
       await banner('TIEBREAK', { cls: 'red', sub: 'button bash', ms: 1400 });
+      if (firstBashIntro) { firstBashIntro = false; instruction('MOST BUTTON PRESSES WINS!', '連打'); }
       setWinner = await playBash();
     }
 
-    score[setWinner]++;
     setIndex++;
-    hud(loc, `SET TO PLAYER ${setWinner}`);
-    await banner('PLAYER ' + setWinner, { cls: setWinner === P1 ? 'p1' : 'p2', sub: 'takes the set', ms: 1800 });
+    if (setWinner === DRAW) {                     // tied tiebreak → nobody scores, on to the next set
+      hud(loc, 'SET DRAWN');
+      await banner('SET DRAWN', { cls: 'gold', sub: 'no points', ms: 1800 });
+    } else {
+      score[setWinner]++;
+      hud(loc, `SET TO PLAYER ${setWinner}`);
+      await banner('PLAYER ' + setWinner, { cls: setWinner === P1 ? 'p1' : 'p2', sub: 'takes the set', ms: 1800 });
+    }
   }
 
   Audio.music(null);

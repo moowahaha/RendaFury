@@ -1,17 +1,24 @@
 // locations.js — the 10 stage locations. Each set of a match is played at a different, randomly
-// chosen location. Backgrounds + music are added later by dropping files into
-// assets/locations/location-NN/ (see each folder's README.txt). Names are placeholders — rename to
-// match the art you supply.
+// chosen location. Backgrounds + music are added later by dropping files into the matching
+// assets/locations/<id>/ folder (see each folder's README.txt). The `id` is the web-friendly
+// folder slug; `name` is the display name shown in the HUD.
 const NAMES = [
-  'Dojo', 'Bamboo Forest', 'Mount Fuji', 'Temple Steps', 'Neon Alley',
-  'Cherry Garden', 'Harbour at Dusk', 'Castle Keep', 'Hot Spring', 'Festival Arena',
+  ['tokyo-neon-district-night', 'Tokyo Neon District (Night)'],
+  ['kyoto-temple-sunset',       'Kyoto Temple at Sunset'],
+  ['mount-fuji-lakeside',       'Mount Fuji Lakeside'],
+  ['osaka-dotonbori',           'Osaka Dotonbori'],
+  ['snowy-mountain-village',    'Snowy Mountain Village'],
+  ['okinawa-beach-sunset',      'Okinawa Beach Sunset'],
+  ['nara-park',                 'Nara Park'],
+  ['shirakawa-go-village',      'Shirakawa-go Village'],
+  ['tanabata-festival',         'Tanabata Festival'],
+  ['samurai-castle-moonlit',    'Samurai Castle (Moonlit)'],
 ];
 
 const BG_FILE = 'background.jpg';     // also try .png at runtime
 const MUSIC_FILE = 'music.mp3';
 
-export const LOCATIONS = NAMES.map((name, i) => {
-  const id = 'location-' + String(i + 1).padStart(2, '0');
+export const LOCATIONS = NAMES.map(([id, name]) => {
   const dir = 'assets/locations/' + id;
   return { id, name, dir, bg: dir + '/' + BG_FILE, music: dir + '/' + MUSIC_FILE };
 });

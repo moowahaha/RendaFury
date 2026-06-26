@@ -2,13 +2,15 @@
 // return to the title. Resolves when a player presses A / START.
 import { Input } from './input.js';
 import { Audio } from './audio.js';
-import { setApp, el, HUD, clearBanner } from './ui.js';
-import { P1 } from './config.js';
+import { setApp, el, HUD, clearBanner, setStage } from './ui.js';
+import { P1, MENU_BG, MENU_MUSIC } from './config.js';
 
 export function results(r) {
   return new Promise((resolve) => {
     HUD.hide();
     clearBanner();
+    setStage(MENU_BG);                 // back to the menu backdrop
+    Audio.music(MENU_MUSIC);           // menu theme resumes (and carries into the title screen)
     const wcls = r.winner === P1 ? 'p1' : 'p2';
     const screen = el('div', 'screen');
     screen.innerHTML = `

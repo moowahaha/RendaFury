@@ -1,6 +1,7 @@
-// ui.js — shared DOM helpers: the HUD (top score bar), the big banner overlay (READY / FIGHT! /
+// ui.js — shared DOM helpers: the HUD (top score bar), the big banner overlay (READY / GO! /
 // WINNER! …), the countdown, and the per-set stage background.
 import { Audio } from './audio.js';
+import { USABLE, SYMBOL } from './config.js';
 
 export const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -11,6 +12,12 @@ export function el(tag, cls, html) {
   return e;
 }
 
+// The illustrative button pad (d-pad cross on the left, A above B on the right). Shared by the memory
+// game and the tiebreak so both show the same controller layout.
+export function padHtml() {
+  return `<div class="pad">${USABLE.map((k) => `<div class="key" data-k="${k}">${SYMBOL[k]}</div>`).join('')}</div>`;
+}
+
 export function setApp(node) {
   const app = document.getElementById('app');
   app.innerHTML = '';
@@ -18,19 +25,21 @@ export function setApp(node) {
   return app;
 }
 
-// Set the stage background to a location image (falls back to the CSS default if it fails to load).
+// Set the stage background to an image (falls back to the CSS default if it fails to load). Accepts a
+// location object ({ bg }) or a plain URL string; null clears it back to the default rays.
 export function setStage(location) {
   const stage = document.getElementById('stage');
   if (!location) { stage.style.backgroundImage = ''; return; }
+  const bg = typeof location === 'string' ? location : location.bg;
   const img = new Image();
-  img.onload = () => { stage.style.backgroundImage = `url("${location.bg}")`; };
+  img.onload = () => { stage.style.backgroundImage = `url("${bg}")`; };
   img.onerror = () => {                       // try .png, else keep the default rays
-    const png = location.bg.replace(/\.jpg$/, '.png');
+    const png = bg.replace(/\.jpg$/, '.png');
     const img2 = new Image();
     img2.onload = () => { stage.style.backgroundImage = `url("${png}")`; };
     img2.src = png;
   };
-  img.src = location.bg;
+  img.src = bg;
 }
 
 // ---- HUD ----------------------------------------------------------------
@@ -82,14 +91,29 @@ export function clearBanner() { document.getElementById('banner').classList.add(
 export async function ready321() {
   Audio.voice('ready');
   await banner('READY', { cls: 'gold', ms: 650 });
-  for (const n of [3, 2, 1]) {
+  for (const k of ['三', '二', '一']) {        // 3 · 2 · 1 in kanji, for flavour
     Audio.dong();
-    await banner(String(n), { ms: 650 });
+    await banner(k, { ms: 650 });
   }
 }
 export async function fight() {
-  Audio.voice('fight');
-  await banner('FIGHT!', { cls: 'red', ms: 600 });
+  Audio.voice('go');
+  await banner('GO!', { cls: 'red', ms: 600 });
 }
 // Full countdown (READY · 3 · 2 · 1 · FIGHT!) — used by the bash tiebreak.
 export async function countdown() { await ready321(); await fight(); }
+
+// ---- instruction strip ----------------------------------------------------
+// An OTT, kanji-flanked one-liner that pops in at the top, holds, then fades. Fire-and-forget; used
+// for first-time hints during a match (e.g. "FIRST TO MATCH THE PATTERN!"). `kanji` flanks both sides.
+export function instruction(text, kanji, ms = 4200) {
+  const bar = document.getElementById('instruction');
+  if (!bar) return;
+  bar.innerHTML = `<div class="instr-inner"><span class="instr-k">${kanji}</span><span class="instr-t">${text}</span><span class="instr-k">${kanji}</span></div>`;
+  bar.classList.remove('hidden', 'out');
+  void bar.offsetWidth;                     // restart the pop-in animation
+  bar.classList.add('show');
+  clearTimeout(bar._hide); clearTimeout(bar._gone);
+  bar._hide = setTimeout(() => bar.classList.add('out'), ms);
+  bar._gone = setTimeout(() => { bar.classList.remove('show'); bar.classList.add('hidden'); }, ms + 450);
+}

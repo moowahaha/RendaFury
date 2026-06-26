@@ -21,8 +21,12 @@ export const DIFFICULTY_ORDER = ['white', 'black', 'furious'];
 export const SET_OPTIONS = [3, 5, 7];
 
 export const GAMES_PER_SET = 3;          // 2 memory games, then a bash tiebreak if still level
-export const SIMON_TIMEOUT_MS = 10000;   // no completed sequence within this → DRAW
-export const BASH_TARGET = 60;           // first to this many presses wins the tiebreak
+export const SIMON_TIMEOUT_MS = 5000;    // no completed sequence within this → DRAW
+export const BASH_SECONDS = 5;           // timeboxed tiebreak: most alternating presses in this window wins
+
+// Title / menu screen assets (the non-gameplay screens). Per-location assets live in locations.js.
+export const MENU_BG = 'assets/background.jpg';   // backdrop for the title + results screens
+export const MENU_MUSIC = 'assets/bgm.mp3';       // looping music for the title + results screens
 
 // Result codes used throughout: a game/set winner is 1, 2, or 0 (draw / not decided).
 export const P1 = 1, P2 = 2, DRAW = 0;

@@ -1,5 +1,19 @@
 /* Renda Fury — Japanese / Street-Fighter-flavoured theme. Deep reds, black, gold, brush energy.
-   Everything scales off vw/vh so it fills a 16:9 TV. Art (backgrounds, cover, fonts) is added later. */
+   Everything scales off vw/vh so it fills a 16:9 TV. */
+
+/* ---- fonts ----
+   Jersey 15 = the everywhere font (blocky/arcade). Honk = the game-name display font, used only for
+   the "RENDA FURY" logo. Both are bundled locally in assets/fonts so the game stays offline-capable. */
+@font-face {
+  font-family: "Jersey 15";
+  src: url("assets/fonts/Jersey15-Regular.ttf") format("truetype");
+  font-weight: normal; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Honk";
+  src: url("assets/fonts/Honk-Regular.ttf") format("truetype");
+  font-weight: normal; font-style: normal; font-display: swap;
+}
 
 :root {
   --red: #e60012;          /* Japan red */
@@ -18,7 +32,7 @@
 html, body {
   width: 100%; height: 100%; overflow: hidden;
   background: var(--ink); color: var(--paper);
-  font-family: "Trebuchet MS", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  font-family: "Jersey 15", "Trebuchet MS", system-ui, sans-serif;
   user-select: none; -webkit-user-select: none;
 }
 
@@ -68,18 +82,44 @@ html, body {
 
 /* ---- title screen ---- */
 .logo { line-height: .9; }
-.logo .kanji { font-size: 13vh; color: var(--red); text-shadow: 0 0 2vh var(--red-dk), .4vh .4vh 0 #000; letter-spacing: .1em; }
-.logo .latin { font-size: 8vh; font-weight: 900; letter-spacing: .06em; color: var(--paper); text-shadow: .5vh .5vh 0 var(--red-dk); }
-.menu { display: flex; flex-direction: column; gap: 1.6vh; margin-top: 2vh; }
+/* Jersey 15 has no CJK glyphs, so the kanji needs an explicit Japanese fallback. */
+.logo .kanji { font-family: "Hiragino Sans", "Yu Gothic", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+  font-size: 13vh; color: var(--red); text-shadow: 0 0 2vh var(--red-dk), .4vh .4vh 0 #000; letter-spacing: .1em; }
+/* The game name uses the Honk display font; its two words slide in from opposite sides. */
+.logo .latin { font-family: "Honk", "Jersey 15", system-ui, sans-serif;
+  display: flex; justify-content: center; gap: .28em;
+  font-size: 11vh; letter-spacing: .02em; color: var(--paper); text-shadow: .5vh .5vh 0 var(--red-dk); }
+.logo .latin .word { display: inline-block; will-change: transform; }
+.logo .latin .renda { animation: slideInLeft .55s cubic-bezier(.2,.9,.3,1) both; }
+.logo .latin .fury  { animation: slideInRight .55s cubic-bezier(.2,.9,.3,1) .25s both; }  /* a quarter-second after Renda */
+@keyframes slideInLeft  { from { transform: translateX(-75vw); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(75vw);  opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+/* dark panel behind the selector so it reads over the busy stage art */
+.menu { display: flex; flex-direction: column; gap: 1.8vh; margin-top: 2vh;
+  padding: 2.6vh 3.5vw; border-radius: 1.6vh;
+  background: rgba(8,4,6,.82); border: .35vh solid rgba(245,197,24,.6);
+  box-shadow: 0 1vh 4vh rgba(0,0,0,.65), inset 0 0 3vh rgba(0,0,0,.5); }
 .menu-row { display: flex; align-items: center; gap: 2vw; font-size: 3vh; }
-.menu-row .label { width: 18vw; text-align: right; color: var(--gold); letter-spacing: .1em; }
+.menu-row .label { width: 18vw; text-align: right; color: var(--gold); letter-spacing: .1em; font-weight: 700; text-shadow: .2vh .2vh 0 #000; }
 .menu-row .opts { display: flex; gap: 1.2vw; }
-.opt { padding: .8vh 2vw; border: .3vh solid rgba(245,197,24,.4); border-radius: 1vh; opacity: .6; }
-.opt.sel { opacity: 1; border-color: var(--gold); background: rgba(245,197,24,.15); box-shadow: 0 0 1.5vh rgba(245,197,24,.4); }
-.menu-row.active .label { text-shadow: 0 0 1vh var(--gold); }
-.menu-row.active .opt.sel { color: var(--gold); }
-.hint { font-size: 2vh; opacity: .7; margin-top: 2vh; letter-spacing: .08em; }
-.controls-note { font-size: 1.7vh; opacity: .55; margin-top: 1vh; max-width: 70vw; line-height: 1.5; }
+/* options: readable white-on-dark by default; the selected one is a high-contrast gold fill */
+.opt { padding: .8vh 2.2vw; border: .3vh solid rgba(245,197,24,.55); border-radius: 1vh;
+  color: var(--paper); background: rgba(0,0,0,.4); font-weight: 700; letter-spacing: .04em; opacity: .9; }
+.opt.sel { opacity: 1; color: var(--ink); background: var(--gold); border-color: #fff;
+  box-shadow: 0 0 2.2vh rgba(245,197,24,.7); text-shadow: none; }
+.menu-row.active .label { color: #fff; text-shadow: 0 0 1.4vh var(--gold); }
+.menu-row.active .opt.sel { background: var(--gold); box-shadow: 0 0 3vh var(--gold); transform: scale(1.07); }
+/* neon/retro tooltips */
+.hint { font-size: 2.1vh; margin-top: 2vh; letter-spacing: .16em; text-transform: uppercase;
+  color: #7ff7ff; text-shadow: 0 0 .7vh #0ff, 0 0 1.6vh #0bf, 0 0 3vh rgba(0,200,255,.6);
+  animation: neonFlicker 2.4s ease-in-out infinite; }
+.controls-note { font-size: 1.7vh; margin-top: 1.2vh; max-width: 70vw; line-height: 1.6; letter-spacing: .1em;
+  color: #ff9cf0; text-shadow: 0 0 .7vh #f0f, 0 0 1.6vh rgba(255,0,200,.55); }
+/* title "2 PLAYER ONLY!" callout — neon magenta, flickering */
+.player-only { margin-top: 2.6vh; font-size: 3vh; font-weight: 900; letter-spacing: .2em;
+  color: #ff5bd0; text-shadow: 0 0 1vh #f0f, 0 0 2.6vh rgba(255,0,200,.7), .2vh .2vh 0 #000;
+  animation: neonFlicker 2.4s ease-in-out infinite; }
+@keyframes neonFlicker { 0%,100% { opacity: 1; } 48% { opacity: 1; } 50% { opacity: .55; } 52% { opacity: 1; } 70% { opacity: .8; } }
 
 /* ---- player button pads (Simon / bash) ---- */
 .arena { display: flex; justify-content: space-around; align-items: center; width: 100%; gap: 4vw; }
@@ -93,9 +133,12 @@ html, body {
 .player-col.p1 .meter > i { background: var(--p1); }
 .player-col.p2 .meter > i { background: var(--p2); }
 .player-col .count { font-size: 4vh; font-weight: 900; }
+/* tiebreak instruction line under the clock */
+.bash-tip { margin-top: 1.2vh; max-width: 26vw; font-size: 2.1vh; font-weight: 700; letter-spacing: .06em;
+  color: #6ff; text-shadow: 0 0 .8vh #0ff, 0 0 1.8vh rgba(0,255,255,.6); }
 
-/* the on-screen button grid that lights up during a Simon sequence */
-.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1vh; width: 26vh; }
+/* the on-screen controller: d-pad cross on the left (cols 1–3), A above B on the right (col 4) */
+.pad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1vh; width: 34vh; }
 .pad .key {
   aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
   font-size: 4vh; border-radius: 1.2vh; border: .35vh solid rgba(255,255,255,.25);
@@ -105,13 +148,16 @@ html, body {
 .player-col.p1 .pad .key.lit { background: var(--p1); border-color: #fff; box-shadow: 0 0 2.5vh var(--p1-glow); }
 .player-col.p2 .pad .key.lit { background: var(--p2); border-color: #fff; box-shadow: 0 0 2.5vh var(--p2-glow); }
 .pad .key.miss { background: #555; box-shadow: 0 0 1.5vh #000; }
-/* keys at grid positions matching a d-pad + face buttons */
+/* tiebreak: the two buttons in play (.active) and the one to press next (.next) */
+.pad .key.active { color: #fff; border-color: var(--gold); background: rgba(245,197,24,.12); }
+.pad .key.next { border-color: #fff; box-shadow: 0 0 2.2vh var(--gold); transform: scale(1.06); }
+/* keys at grid positions matching a d-pad + face buttons (A above B, right of the cross) */
 .key[data-k="up"]    { grid-area: 1 / 2; }
 .key[data-k="left"]  { grid-area: 2 / 1; }
-.key[data-k="b"]     { grid-area: 2 / 2; }
 .key[data-k="right"] { grid-area: 2 / 3; }
 .key[data-k="down"]  { grid-area: 3 / 2; }
-.key[data-k="a"]     { grid-area: 3 / 3; }
+.key[data-k="a"]     { grid-area: 1 / 4; }
+.key[data-k="b"]     { grid-area: 2 / 4; }
 
 /* ---- big centered banner (READY / FIGHT! / WINNER! …) ---- */
 #banner {
@@ -119,6 +165,8 @@ html, body {
   display: flex; align-items: center; justify-content: center; pointer-events: none;
 }
 #banner .txt {
+  /* Jersey 15 for the Latin words (READY/FIGHT!/…); Japanese fallback for the 三 二 一 countdown. */
+  font-family: "Jersey 15", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
   font-size: 16vh; font-weight: 900; letter-spacing: .04em; text-align: center;
   color: var(--paper); text-shadow: 0 0 4vh #000, .6vh .6vh 0 var(--red-dk);
   animation: slam .35s cubic-bezier(.2,1.4,.4,1) both;
@@ -129,6 +177,36 @@ html, body {
 #banner .txt.p2   { color: var(--p2); text-shadow: 0 0 4vh var(--p2-glow), .6vh .6vh 0 #000; }
 .banner-sub { display: block; font-size: 5vh; margin-top: 1vh; color: var(--paper); letter-spacing: .2em; }
 @keyframes slam { from { transform: scale(3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ---- OTT instruction strip (first memory game / first tiebreak) ---- */
+#instruction {
+  position: fixed; top: 11vh; left: 0; right: 0; z-index: 40;
+  display: flex; justify-content: center; pointer-events: none;
+  opacity: 1; transition: opacity .4s ease;
+}
+#instruction.out { opacity: 0; }
+#instruction .instr-inner {
+  display: inline-flex; align-items: center; gap: 2vw;
+  padding: 1.4vh 3.5vw; transform: rotate(-1.6deg);
+  background: linear-gradient(180deg, rgba(160,0,20,.94), rgba(12,5,8,.94));
+  border: .4vh solid var(--gold); border-radius: 1.4vh;
+  box-shadow: 0 0 5vh rgba(0,0,0,.75), 0 0 2.4vh rgba(245,197,24,.4), inset 0 0 2vh rgba(0,0,0,.5);
+}
+#instruction.show .instr-inner { animation: instrPop .5s cubic-bezier(.2,1.6,.35,1) both; }
+#instruction .instr-t {
+  font-size: 4.4vh; font-weight: 900; letter-spacing: .06em; color: var(--gold);
+  text-shadow: .35vh .35vh 0 #000, 0 0 1.5vh rgba(245,197,24,.5);
+}
+#instruction .instr-k {                  /* flanking kanji (needs a Japanese face) */
+  font-family: "Hiragino Sans", "Yu Gothic", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+  font-size: 6vh; font-weight: 900; color: var(--paper);
+  text-shadow: 0 0 1.8vh var(--red), .3vh .3vh 0 #000;
+}
+@keyframes instrPop {
+  from { transform: scale(1.6) rotate(-1.6deg); opacity: 0; }
+  60%  { transform: scale(.94) rotate(-1.6deg); opacity: 1; }
+  to   { transform: scale(1) rotate(-1.6deg); opacity: 1; }
+}
 
 /* ---- results screen ---- */
 .result-winner { font-size: 9vh; font-weight: 900; }

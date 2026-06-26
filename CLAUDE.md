@@ -44,9 +44,12 @@ just uses their own controller.
 - **Set** = up to 3 games at one **location** (random per set):
   - **Game 1 & 2 — Memory** (`simon.js`): the computer shows a random button sequence on both pads,
     then hides it; both players race to reproduce it. First to complete it correctly wins the game; a
-    wrong press resets that player's progress. No clean run within **10 s** → **DRAW**.
+    wrong press resets that player's progress. No clean run within **5 s** → **DRAW**.
   - If the two memory games are **level** (1–1, or 0–0 from two draws) → **Game 3 — Button Bash**
-    (`bash.js`): the game picks 2 buttons; first to **60** presses wins. (Always decisive.)
+    (`bash.js`): the game picks 2 buttons; each player must press them **alternately** (▲, B, ▲, B, …)
+    as fast as they can for **5 s** — most correct alternating presses wins (pressing the same button
+    twice doesn't score). The timed round only ends on the clock; a dead heat goes to **sudden death**
+    (next correct alternation wins), so it's always decisive.
   - Otherwise the set goes to whoever won more of the two memory games.
 - **Difficulty** (`config.js → DIFFICULTIES`) sets the memory sequence **length** and **speed**:
   - **White Belt** — 3 buttons, slow. **Black Belt** — 5, medium. **Furious** — 7, fast.
@@ -89,14 +92,18 @@ Result codes everywhere: **1** = Player 1, **2** = Player 2, **0** = draw / unde
 
 ## Placeholders to replace (art + audio)
 
-- **Voice** (`audio.js`): currently the browser's speech synthesis (deep + slow) for READY/FIGHT/
-  WINNER/DRAW. Drop real "SF announcer" clips into `assets/voice/{ready,fight,winner,draw}.mp3` and set
-  `VOICE_FILES = true`.
-- **Locations** (`assets/locations/location-01…10/`): add `background.jpg` (or `.png`) and `music.mp3`
-  to each; rename the display names in `locations.js` to match the art.
+- **Voice** (`audio.js`): real recorded clips in `assets/voice/` — `ready` (each countdown), `go`
+  (FIGHT!), `tie` (memory draw), `player1`/`player2` (a player wins a game), `winner` (match end),
+  `intro` (title, as "FURY!" slides in). Played via `Wonderbox.sound` (with an `<audio>` fallback for
+  plain-browser testing). Triggered from `ui.js`, `simon.js`, `bash.js`, `results.js`, `title.js`.
+- **Locations** (`assets/locations/<slug>/`, e.g. `tokyo-neon-district-night/`): each has a
+  `background.jpg` + `music.mp3` (wired via `locations.js` → `setStage`/`Audio.music` in `match.js`).
+- **Title / menu** (`config.js → MENU_BG`, `MENU_MUSIC`): `assets/background.jpg` backdrop +
+  `assets/bgm.mp3` looping theme, shown on the title + results screens.
 - **Cover**: `assets/cover.png` (square) for the CHOOSE GAME grid.
-- **Fonts**: currently system fonts. A proper brush/kanji display font would lift the theme (bundle it
-  locally so the game stays offline-capable).
+- **Fonts** (`assets/fonts/`, declared in `style.css`): **Jersey 15** is the global font; **Honk** is
+  the game-name display font for the title logo (its two words slide in from opposite sides). Both are
+  bundled locally so the game stays offline-capable. The kanji keep a system Japanese fallback.
 - **Offline SDK**: for offline browser testing, download `wonderbox.min.js` next to `index.html` and
   point the `<script src>` at it. (On the console the agent provides it automatically.)
 
@@ -108,7 +115,7 @@ Result codes everywhere: **1** = Player 1, **2** = Player 2, **0** = draw / unde
   one controller is connected on the console — `Input.players()`).
 - **START handling**: the SDK owns START (pause / hold-3s → main menu) during play; decide how pause
   should interact with a live game/countdown.
-- **Balancing**: tune `DIFFICULTIES`, the 10 s memory timeout, and the 60-press bash target; consider
+- **Balancing**: tune `DIFFICULTIES`, the 5 s memory timeout, and the 5 s bash timebox (`BASH_SECONDS`); consider
   growing sequence length across the two memory games.
 - **More memory variety**: show-faster-each-round, partial-credit, or per-player different sequences.
 - **Accessibility**: colour-blind-safe P1/P2 cues beyond red/blue.
