@@ -37,6 +37,7 @@ export async function playSimon(difficulty) {
   const prog = { 1: arena.querySelector('#prog1'), 2: arena.querySelector('#prog2') };
 
   await ready();
+  await wait(500);                 // a beat after the level/READY settles, before the pattern flashes
 
   // --- show the sequence on BOTH pads (memorise) ---
   const seq = randomSeq(difficulty.seqLen);
@@ -49,7 +50,10 @@ export async function playSimon(difficulty) {
     await wait(difficulty.gapMs);
   }
 
-  // --- count the players in, then race (input goes live the instant GO! flashes, not after it) ---
+  await wait(250);                 // a beat between the pattern ending and the 三 二 一 countdown
+
+  // --- count the players in, then race. Input opens as the countdown ends; GO! lands 0.2s later,
+  //     so eager presses in that grace window still count ---
   await count321();
 
   const winner = await new Promise((resolve) => {
@@ -76,7 +80,7 @@ export async function playSimon(difficulty) {
     offs.push(Input.onPress(P1, (b) => handle(P1, b)));
     offs.push(Input.onPress(P2, (b) => handle(P2, b)));
     const timer = setTimeout(() => finish(DRAW), SIMON_TIMEOUT_MS);
-    fight();                                          // flash GO! + voice while input is already accepted
+    setTimeout(fight, 200);                           // input is already live; GO! lands 0.2s later
   });
 
   await showResult(winner);

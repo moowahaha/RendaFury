@@ -11,9 +11,9 @@ export const SYMBOL = { up: '▲', down: '▼', left: '◀', right: '▶', a: 'A
 // Difficulty affects the memory game: how long the sequence is and how fast it's shown.
 // showMs = how long each button stays lit; gapMs = dark gap between buttons. Faster = harder.
 export const DIFFICULTIES = {
-  white:   { key: 'white',   label: 'WHITE BELT', seqLen: 4, showMs: 850, gapMs: 260 },
-  black:   { key: 'black',   label: 'BLACK BELT', seqLen: 6, showMs: 560, gapMs: 180 },
-  furious: { key: 'furious', label: 'FURIOUS',    seqLen: 8, showMs: 340, gapMs: 120 },
+  white:   { key: 'white',   label: 'WHITE BELT', seqLen: 3, showMs: 850, gapMs: 260 },
+  black:   { key: 'black',   label: 'BLACK BELT', seqLen: 5, showMs: 560, gapMs: 180 },
+  furious: { key: 'furious', label: 'FURIOUS',    seqLen: 6, showMs: 340, gapMs: 120 },
 };
 export const DIFFICULTY_ORDER = ['white', 'black', 'furious'];
 
