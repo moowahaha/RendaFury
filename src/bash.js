@@ -91,10 +91,10 @@ export async function playBash() {
     offs.push(Input.onPress(P1, (b) => handle(P1, b)));
     offs.push(Input.onPress(P2, (b) => handle(P2, b)));
 
-    // Input is already live; GO! + the clock start 0.2s later, so eager presses in that window count.
+    // Input opens a hair (~30ms) before GO! + the clock, so a press right on GO counts but no earlier.
     // Only the clock ends it. Level (including nobody pressing) → DRAW, so the set is simply tied.
     let start = 0;
-    setTimeout(() => { fight(); start = performance.now(); }, 200);
+    setTimeout(() => { fight(); start = performance.now(); }, 30);
     const tick = setInterval(() => {
       if (!start) return;                             // clock waits for GO!
       const left = BASH_SECONDS - (performance.now() - start) / 1000;

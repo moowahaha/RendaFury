@@ -52,8 +52,8 @@ export async function playSimon(difficulty) {
 
   await wait(250);                 // a beat between the pattern ending and the 三 二 一 countdown
 
-  // --- count the players in, then race. Input opens as the countdown ends; GO! lands 0.2s later,
-  //     so eager presses in that grace window still count ---
+  // --- count the players in, then race. Input opens a hair (~30ms) before GO! so a press landing
+  //     right on GO still counts, without being lenient ---
   await count321();
 
   const winner = await new Promise((resolve) => {
@@ -80,7 +80,7 @@ export async function playSimon(difficulty) {
     offs.push(Input.onPress(P1, (b) => handle(P1, b)));
     offs.push(Input.onPress(P2, (b) => handle(P2, b)));
     const timer = setTimeout(() => finish(DRAW), SIMON_TIMEOUT_MS);
-    setTimeout(fight, 200);                           // input is already live; GO! lands 0.2s later
+    setTimeout(fight, 30);                            // input is already live; GO! lands a hair later
   });
 
   await showResult(winner);
