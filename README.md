@@ -9,6 +9,29 @@ Pure static HTML/CSS/JS (ES modules) — no build step, no framework, fully test
 > *Renda* (連打) — "rapid-fire button mashing." This is a head-to-head reflex-and-memory duel: no
 > AI opponent, no single-player mode. Grab a friend (or a second controller) and fight.
 
+## Publishing to the Emporium
+
+This repo is the **source** of the game. It is published to the **Wonderbox Emporium** through the
+DocMatrix Creator Hub — there is no `manifest.json` here any more; the game's details are entered in
+the UI when you upload it.
+
+1. Sign in at **doc-matrix.com/emporium** → **Creator Hub** → **Upload a game**.
+2. **Source** (step *Upload*): either upload a **zip of this repo**, or point the Emporium at this
+   public GitHub repository (and pick a branch/tag).
+3. **Details** to enter (step *Information*):
+
+   | Field        | Value |
+   |--------------|-------|
+   | **Name**     | Renda Fury |
+   | **Description** | A two-player Japanese button-fighting showdown — memory duels and furious button-mashing across best-of-N sets. |
+   | **Players**  | Multiplayer (strictly 2-player) |
+   | **Cover art** | `assets/cover.png` — upload this as the cover in the modal (optional, ≤2 MB; square works best) |
+
+4. Tick the consent checkboxes and submit. The Emporium runs its automatic checks and notifies you of
+   the result; on success the game is playable on a Wonderbox by its 6-letter code.
+
+The game ships its licence as the [`LICENSE`](./LICENSE) file (DocMatrix Commercial Licence).
+
 ## The game at a glance
 
 A **match** is a best-of-3, -5, or -7 series of **sets**. The first player to win
