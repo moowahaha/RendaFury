@@ -35,7 +35,7 @@ export const P1 = 1, P2 = 2, DRAW = 0;
 // Player 1 is ALSO handled by the SDK (arrows / Space=A / Backspace=B). Player 2 has no SDK keyboard
 // (the SDK gives the keyboard to player 1 only), so we map a second half here.
 export const KEYBOARD = {
-  // Player 1 reference (handled by the Wonderbox SDK; listed for the on-screen controls hint).
+  // Player 1 reference (handled by the Mebobox SDK; listed for the on-screen controls hint).
   1: { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight', a: 'Space', b: 'Backspace' },
   // Player 2 fallback (handled by src/input.js directly).
   2: { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD', a: 'KeyF', b: 'KeyG' },

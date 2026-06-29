@@ -1,6 +1,6 @@
 // audio.js — all game audio through the Web Audio API.
 //
-// Why not Wonderbox.music / .sound (HTMLAudioElement)? On the console the game runs in a sandboxed
+// Why not Mebobox.music / .sound (HTMLAudioElement)? On the console the game runs in a sandboxed
 // iframe that only ever receives FORWARDED input (postMessage), never a real user gesture, and this
 // Chromium build won't autoplay an <audio> element there — so file playback via HTMLAudio stays
 // silent. The Web Audio context, by contrast, can be resumed and plays decoded buffers reliably

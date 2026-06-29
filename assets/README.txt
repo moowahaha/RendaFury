@@ -1,6 +1,6 @@
 Renda Fury — assets
 
-cover.png            Game cover art (square; shown in the Wonderbox CHOOSE GAME grid). Referenced by
+cover.png            Game cover art (square; shown in the Mebobox CHOOSE GAME grid). Referenced by
                      manifest.json. Optional for browser testing.
 
 locations/location-01 … location-10/

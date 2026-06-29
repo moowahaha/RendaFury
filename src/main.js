@@ -1,7 +1,7 @@
 // main.js — Renda Fury entry point. Wires input and runs the top-level flow:
 //   title (pick difficulty + best-of) → match (sets/games) → results → back to title, forever.
 //
-// Built on the Wonderbox SDK (window.Wonderbox), which is loaded by index.html and also runs
+// Built on the Mebobox SDK (window.Mebobox), which is loaded by index.html and also runs
 // standalone in a plain browser, so this is testable in a browser (see CLAUDE.md for the controls).
 import { Input } from './input.js';
 import { title } from './title.js';
@@ -19,6 +19,6 @@ async function boot() {
   }
 }
 
-// The SDK script is loaded synchronously in <head>, so window.Wonderbox is ready; start on DOM ready.
+// The SDK script is loaded synchronously in <head>, so window.Mebobox is ready; start on DOM ready.
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();

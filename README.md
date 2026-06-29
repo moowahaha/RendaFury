@@ -1,7 +1,7 @@
 # Renda Fury
 
 A **strictly 2-player** Japanese / Street-Fighter-flavoured button-fighting game for the
-**Wonderbox** console (by DocMatrix), built on the **Wonderbox SDK**. Two players duel across a
+**Mebobox** console (by Mebobox), built on the **Mebobox SDK**. Two players duel across a
 best-of-N series of sets; each set mixes **memory duels** with a **button-bash** decider.
 
 Pure static HTML/CSS/JS (ES modules) — no build step, no framework, fully testable in a browser.
@@ -11,11 +11,11 @@ Pure static HTML/CSS/JS (ES modules) — no build step, no framework, fully test
 
 ## Publishing to the Emporium
 
-This repo is the **source** of the game. It is published to the **Wonderbox Emporium** through the
-DocMatrix Creator Hub — there is no `manifest.json` here any more; the game's details are entered in
+This repo is the **source** of the game. It is published to the **Mebobox Emporium** through the
+Mebobox Creator Hub — there is no `manifest.json` here any more; the game's details are entered in
 the UI when you upload it.
 
-1. Sign in at **doc-matrix.com/emporium** → **Creator Hub** → **Upload a game**.
+1. Sign in at **mebobox.com/emporium** → **Creator Hub** → **Upload a game**.
 2. **Source** (step *Upload*): either upload a **zip of this repo**, or point the Emporium at this
    public GitHub repository (and pick a branch/tag).
 3. **Details** to enter (step *Information*):
@@ -28,9 +28,9 @@ the UI when you upload it.
    | **Cover art** | `assets/cover.png` — upload this as the cover in the modal (optional, ≤2 MB; square works best) |
 
 4. Tick the consent checkboxes and submit. The Emporium runs its automatic checks and notifies you of
-   the result; on success the game is playable on a Wonderbox by its 6-letter code.
+   the result; on success the game is playable on a Mebobox by its 6-letter code.
 
-The game ships its licence as the [`LICENSE`](./LICENSE) file (DocMatrix Commercial Licence).
+The game ships its licence as the [`LICENSE`](./LICENSE) file (Mebobox Commercial Licence).
 
 ## The game at a glance
 
@@ -77,12 +77,12 @@ For browser testing on a single keyboard:
 | **Player 1**   | ↑ | ↓ | ← | → | Space | Backspace |
 | **Player 2**   | W | S | A | D | F | G |
 
-Player 1's keyboard is provided by the Wonderbox SDK. The SDK gives player 2 no keyboard, so
+Player 1's keyboard is provided by the Mebobox SDK. The SDK gives player 2 no keyboard, so
 `src/input.js` adds the W/A/S/D/F/G half purely for testing.
 
 ## Running it
 
-ES modules must be served over HTTP (not `file://`), and the SDK is loaded from DocMatrix:
+ES modules must be served over HTTP (not `file://`), and the SDK is loaded from Mebobox:
 
 ```sh
 cd RendaFury
@@ -90,10 +90,10 @@ python3 -m http.server 8000
 # then open http://localhost:8000  (needs internet for the SDK)
 ```
 
-On the console it runs like any Wonderbox game: the agent serves it and rewrites the SDK
+On the console it runs like any Mebobox game: the agent serves it and rewrites the SDK
 `<script src>` to a local copy.
 
-**Offline browser testing:** download `wonderbox.min.js` next to `index.html` and point the
+**Offline browser testing:** download `mebobox.min.js` next to `index.html` and point the
 `<script src>` at it.
 
 ## Project layout
@@ -129,4 +129,4 @@ background and music under `assets/locations/<slug>/`.
 
 ## License
 
-Proprietary — DocMatrix Commercial Licence v0.1 (see `LICENSE`). Copyright © 2026 Stephen Hardisty.
+Proprietary — Mebobox Commercial Licence v0.1 (see `LICENSE`). Copyright © 2026 Stephen Hardisty.

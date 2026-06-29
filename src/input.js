@@ -1,9 +1,9 @@
 // input.js — per-player input for a strictly 2-player game.
 //
 // Sources, merged:
-//   • Player 1: Wonderbox.player(1)  — a controller AND the keyboard (arrows / Space=A / Backspace=B),
+//   • Player 1: Mebobox.player(1)  — a controller AND the keyboard (arrows / Space=A / Backspace=B),
 //                because the SDK gives the keyboard to player 1.
-//   • Player 2: Wonderbox.player(2)  — the second controller …plus a keyboard fallback (W A S D / F /
+//   • Player 2: Mebobox.player(2)  — the second controller …plus a keyboard fallback (W A S D / F /
 //                G) handled here, so two players can be tested on ONE keyboard in a browser.
 //
 // API:
@@ -36,12 +36,12 @@ export const Input = {
   init() {
     if (started) return;
     started = true;
-    const WB = window.Wonderbox;
+    const MB = window.Mebobox;
 
     // SDK per-player presses (controllers + P1 keyboard).
-    if (WB && WB.player) {
-      WB.player(1).onPress((btn) => emit(1, btn));
-      WB.player(2).onPress((btn) => emit(2, btn));
+    if (MB && MB.player) {
+      MB.player(1).onPress((btn) => emit(1, btn));
+      MB.player(2).onPress((btn) => emit(2, btn));
     }
 
     // Keyboard fallback for Player 2 (the SDK doesn't give it a keyboard). Edge-detected so holding a
@@ -72,15 +72,15 @@ export const Input = {
   },
 
   isDown(player, button) {
-    const WB = window.Wonderbox;
-    if (WB && WB.player && WB.player(player).isDown(button)) return true;
+    const MB = window.Mebobox;
+    if (MB && MB.player && MB.player(player).isDown(button)) return true;
     if (player === 2 && kbDown[2][button]) return true;
     return false;
   },
 
   players() {
-    const WB = window.Wonderbox;
-    return WB && WB.players ? WB.players() : 1;
+    const MB = window.Mebobox;
+    return MB && MB.players ? MB.players() : 1;
   },
 };
 

@@ -1,12 +1,12 @@
 # Renda Fury
 
-A **strictly 2-player** Japanese / Street-Fighter-flavoured button-fighting game for the **Wonderbox**
-console (by DocMatrix), built on the **Wonderbox SDK**. Two players duel across a best-of-N series of
+A **strictly 2-player** Japanese / Street-Fighter-flavoured button-fighting game for the **Mebobox**
+console (by Mebobox), built on the **Mebobox SDK**. Two players duel across a best-of-N series of
 sets; each set mixes **memory duels** with a **button-bash** decider. Pure static HTML/CSS/JS (ES
 modules) — no build step, no framework. **Testable in a browser.**
 
-**License**: proprietary — DocMatrix Commercial Licence v0.1 (see `LICENSE`, copied from
-`../DocMatrix/legal`). Copyright © 2026 Stephen Hardisty.
+**License**: proprietary — Mebobox Commercial Licence v0.1 (see `LICENSE`, copied from
+`../Mebobox/legal`). Copyright © 2026 Stephen Hardisty.
 
 > This file is the orientation for continued development. The current state is a **working scaffold**:
 > the full game flow plays end-to-end (browser-testable), with placeholder audio/art and first-pass
@@ -14,7 +14,7 @@ modules) — no build step, no framework. **Testable in a browser.**
 
 ## How to run / test (browser)
 
-ES modules must be served over HTTP (not `file://`), and the SDK is loaded from Doc Matrix:
+ES modules must be served over HTTP (not `file://`), and the SDK is loaded from Mebobox:
 
 ```
 cd RendaFury
@@ -22,7 +22,7 @@ python3 -m http.server 8000
 # open http://localhost:8000  (needs internet for the SDK; see "Offline" below)
 ```
 
-On the **console** it runs like any Wonderbox game: the agent serves it and rewrites the SDK
+On the **console** it runs like any Mebobox game: the agent serves it and rewrites the SDK
 `<script src>` to a local copy; player 1 = controller 1 (or the keyboard), player 2 = controller 2.
 
 ### Controls (2 players)
@@ -72,7 +72,7 @@ function that renders into `#app` and resolves with its outcome.
 | `src/main.js` | Entry point + top-level flow loop. |
 | `src/config.js` | **Tunables**: difficulties, best-of options, usable buttons, timeout, bash target, keyboard map. |
 | `src/input.js` | `Input`: per-player presses, merging SDK `player(1)/player(2)` + the P2 keyboard fallback. |
-| `src/audio.js` | `Audio`: synth **dong/blip** (Web Audio), **voice** callouts (speech-synth placeholder), per-location **music** (via `Wonderbox.music`). |
+| `src/audio.js` | `Audio`: synth **dong/blip** (Web Audio), **voice** callouts (speech-synth placeholder), per-location **music** (via `Mebobox.music`). |
 | `src/locations.js` | The 10 locations + `pickLocations(n)` (random, distinct per match). |
 | `src/ui.js` | `HUD`, `banner()`, `ready321()` / `fight()` / `countdown()`, `setStage()`, `setApp()`, `el()`, `wait()`. |
 | `src/title.js` | Title screen: choose difficulty + best-of. |
@@ -83,18 +83,18 @@ function that renders into `#app` and resolves with its outcome.
 
 Result codes everywhere: **1** = Player 1, **2** = Player 2, **0** = draw / undecided (`P1/P2/DRAW` in `config.js`).
 
-## Wonderbox SDK usage
+## Mebobox SDK usage
 
-- **Input**: `Wonderbox.player(n).onPress/onRelease/isDown` (1-based), `Wonderbox.players()`,
-  `Wonderbox.onPlayers(fn)`. `Wonderbox.BUTTONS` = `up,down,left,right,a,b,start,select`. See `input.js`.
-- **Audio**: `Wonderbox.music.set(url,{volume,loop,autoplay})` and `Wonderbox.sound.play(url)`. See `audio.js`.
+- **Input**: `Mebobox.player(n).onPress/onRelease/isDown` (1-based), `Mebobox.players()`,
+  `Mebobox.onPlayers(fn)`. `Mebobox.BUTTONS` = `up,down,left,right,a,b,start,select`. See `input.js`.
+- **Audio**: `Mebobox.music.set(url,{volume,loop,autoplay})` and `Mebobox.sound.play(url)`. See `audio.js`.
 - The SDK is `0.4.0` (multiplayer). It runs standalone in a browser (reads keyboard + gamepads).
 
 ## Placeholders to replace (art + audio)
 
 - **Voice** (`audio.js`): real recorded clips in `assets/voice/` — `ready` (each countdown), `go`
   (FIGHT!), `tie` (memory draw), `player1`/`player2` (a player wins a game), `winner` (match end),
-  `intro` (title, as "FURY!" slides in). Played via `Wonderbox.sound` (with an `<audio>` fallback for
+  `intro` (title, as "FURY!" slides in). Played via `Mebobox.sound` (with an `<audio>` fallback for
   plain-browser testing). Triggered from `ui.js`, `simon.js`, `bash.js`, `results.js`, `title.js`.
 - **Locations** (`assets/locations/<slug>/`, e.g. `tokyo-neon-district-night/`): each has a
   `background.jpg` + `music.mp3` (wired via `locations.js` → `setStage`/`Audio.music` in `match.js`).
@@ -104,7 +104,7 @@ Result codes everywhere: **1** = Player 1, **2** = Player 2, **0** = draw / unde
 - **Fonts** (`assets/fonts/`, declared in `style.css`): **Jersey 15** is the global font; **Honk** is
   the game-name display font for the title logo (its two words slide in from opposite sides). Both are
   bundled locally so the game stays offline-capable. The kanji keep a system Japanese fallback.
-- **Offline SDK**: for offline browser testing, download `wonderbox.min.js` next to `index.html` and
+- **Offline SDK**: for offline browser testing, download `mebobox.min.js` next to `index.html` and
   point the `<script src>` at it. (On the console the agent provides it automatically.)
 
 ## Next steps / ideas
@@ -126,4 +126,4 @@ Result codes everywhere: **1** = Player 1, **2** = Player 2, **0** = draw / unde
 - Plain ES modules, no build step. Keep it static (served by the agent / any static server).
 - Match the existing module style (small, single-purpose, `async` screens resolving outcomes).
 - 16:9, scale with `vw/vh`. Keep text TV-readable (large).
-- Built on the Wonderbox SDK only — no other runtime deps.
+- Built on the Mebobox SDK only — no other runtime deps.
