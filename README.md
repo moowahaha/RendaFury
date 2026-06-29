@@ -23,7 +23,7 @@ the UI when you upload it.
    | Field        | Value |
    |--------------|-------|
    | **Name**     | Renda Fury |
-   | **Description** | A two-player Japanese button-fighting showdown — memory duels and furious button-mashing across best-of-N sets. |
+   | **Description** | A two-player Japanese button-fighting showdown — memory duels and furious button-mashing awaits. |
    | **Players**  | Multiplayer (strictly 2-player) |
    | **Cover art** | `assets/cover.png` — upload this as the cover in the modal (optional, ≤2 MB; square works best) |
 
