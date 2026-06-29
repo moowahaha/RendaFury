@@ -6,7 +6,7 @@ sets; each set mixes **memory duels** with a **button-bash** decider. Pure stati
 modules) — no build step, no framework. **Testable in a browser.**
 
 **License**: proprietary — Mebobox Commercial Licence v0.1 (see `LICENSE`, copied from
-`../Mebobox/legal`). Copyright © 2026 Stephen Hardisty.
+`../MeboboxSite/legal`). Copyright © 2026 Stephen Hardisty.
 
 > This file is the orientation for continued development. The current state is a **working scaffold**:
 > the full game flow plays end-to-end (browser-testable), with placeholder audio/art and first-pass
